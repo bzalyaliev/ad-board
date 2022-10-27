@@ -1,10 +1,10 @@
 package com.github.bzalyaliev.adboard.service;
 
+import com.github.bzalyaliev.adboard.exception.NotFoundException;
 import com.github.bzalyaliev.adboard.repository.AdsRepository;
 import com.github.bzalyaliev.adboard.repository.entity.AdsEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,8 +17,8 @@ public class AdsServiceImpl implements AdsService {
     }
 
     @Override
-    public Optional<AdsEntity> getAdById(Long adId) {
-        return adsRepository.findById(adId);
+    public AdsEntity getAdById(Long adId) {
+        return adsRepository.findById(adId).orElseThrow(() -> new NotFoundException(String.format("No ad with id %s is available", adId)));
     }
 
     @Override
@@ -33,17 +33,18 @@ public class AdsServiceImpl implements AdsService {
 
     @Override
     public void updateAd(Long adId, AdsEntity adsEntity) {
-        adsRepository.findById(adId).get()
-                .setTitle(adsEntity.getTitle())
-                .setDescription(adsEntity.getDescription())
-                .setContacts((adsEntity.getContacts()))
-                .setPicture(adsEntity.getPicture())
-                .setCategory(adsEntity.getCategory());
-        adsRepository.save(adsEntity);
+        AdsEntity existingAd = adsRepository.findById(adId).orElseThrow(() -> new NotFoundException(String.format("No ad with id %s is available", adId)));
+                existingAd.setTitle(adsEntity.getTitle());
+                existingAd.setDescription(adsEntity.getDescription());
+                existingAd.setContacts((adsEntity.getContacts()));
+                existingAd.setPicture(adsEntity.getPicture());
+                existingAd.setCategory(adsEntity.getCategory());
+        adsRepository.save(existingAd);
     }
 
     @Override
     public void deleteAdById(Long adId) {
+        adsRepository.findById(adId).orElseThrow(() -> new NotFoundException(String.format("No ad with id %s is available", adId)));
         adsRepository.deleteById(adId);
     }
 

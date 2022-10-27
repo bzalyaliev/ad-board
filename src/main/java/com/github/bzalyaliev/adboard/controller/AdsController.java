@@ -21,7 +21,7 @@ public class AdsController {
     }
 
     @GetMapping("/ad/{id}")
-    public Optional<AdsEntity> getAdById(@PathVariable("id") long adId) {
+    public AdsEntity getAdById(@PathVariable("id") long adId) {
         return adsService.getAdById(adId);
     }
 
